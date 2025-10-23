@@ -53,6 +53,5 @@ public class Ticket {
     }
 
     public void setId(int i) {
-
     }
 }
