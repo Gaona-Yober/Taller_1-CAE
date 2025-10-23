@@ -42,7 +42,7 @@ public class ColaTickets {
             System.out.println("No hay casos en espera.");
             return;
         }
-        System.out.println("Casos pendientes:");
+        System.out.println("\nCasos pendientes:");
         for (Ticket t : cola) {
             System.out.println("- " + t);
         }
