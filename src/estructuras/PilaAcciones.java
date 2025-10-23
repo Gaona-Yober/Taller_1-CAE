@@ -2,31 +2,44 @@ package estructuras;
 
 import java.util.Stack;
 
-public class PilaAcciones<T> {
-    private Stack<T> pilaUndo; //acciones ya ejecutadas y que se pueden deshacer
-    private Stack<T> pilaRedo; //acciones deshechas y que se pueden rehacer
+public class PilaAcciones {
+    private Stack<Runnable> pilaUndo; //acciones ya ejecutadas y que se pueden deshacer
+    private Stack<Runnable> pilaRedo; //acciones deshechas y que se pueden rehacer
 
     public PilaAcciones() {
         pilaUndo = new Stack<>();
         pilaRedo = new Stack<>();
     }
 
-    public void registrarAccion(T accion) {
-        pilaUndo.push(accion); //nueva accion (del usuario) ejecutada
+    public void registrarAccion(Runnable accion, Runnable accionContraria) {
+        pilaUndo.push(() -> {
+            accionContraria.run();
+            pilaRedo.push(() -> accion.run()); //guarda la accion original, al deshacer
+                });
         pilaRedo.clear(); //se limpia la pila de rehacer al registrar una nueva accion
     }
 
-    public T deshacer() {
-        if (pilaUndo.isEmpty()) return null;
-        T accion = pilaUndo.pop(); //ultima accion ejecutada de Undo
-        pilaRedo.push(accion);    //se agrega a la pila de Redo para poder rehacerla
-        return accion;
+    public void ejecutarAccion(Runnable accion){
+        accion.run();
     }
 
-    public T rehacer() {
-        if (pilaRedo.isEmpty()) return null;
-        T accion = pilaRedo.pop(); //ultima accion deshecha de Redo
-        pilaUndo.push(accion);  //se agrega a la pila de Undo para poder deshacerla nuevamente
-        return accion;
+    public void deshacer() {
+        if (pilaUndo.isEmpty()) {
+            System.out.println("No hay acciones para deshacer.");
+            return;
+        }
+        Runnable accion = pilaUndo.pop();
+        accion.run();//ejecuta la accion contraria
+        System.out.println("Acción deshecha correctamente.");
+    }
+
+    public void rehacer() {
+        if (pilaRedo.isEmpty()) {
+            System.out.println("No hay acciones para rehacer.");
+            return;
+        }
+        Runnable accion = pilaRedo.pop();
+        accion.run(); //ejecuta la accion original
+        System.out.println("Acción rehecha correctamente");
     }
 }

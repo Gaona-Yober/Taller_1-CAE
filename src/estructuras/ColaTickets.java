@@ -7,12 +7,16 @@ import java.util.Queue;
 
 public class ColaTickets {
     private Queue<Ticket> cola;
+    private int contadorTickets = 0;
 
     public ColaTickets() {
         cola = new LinkedList<>();
     }
 
     public void agregarTicket(Ticket ticket) {
+        if(ticket.getId() ==0){
+            ticket.setId(++contadorTickets);
+        }
         cola.offer(ticket);
     }
 

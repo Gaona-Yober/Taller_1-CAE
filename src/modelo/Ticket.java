@@ -51,4 +51,8 @@ public class Ticket {
         return String.format("Ticket #%d | %s (%s) - %s [%s]",
                 id, nombreEstudiante, cedula, tramite, estado);
     }
+
+    public void setId(int i) {
+
+    }
 }

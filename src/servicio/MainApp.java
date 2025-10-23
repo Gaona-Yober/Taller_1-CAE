@@ -45,7 +45,7 @@ public class MainApp {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         ColaTickets cola = new ColaTickets();
-        PilaAcciones<String> acciones = new PilaAcciones<>();
+        PilaAcciones acciones = new PilaAcciones();
 
         int opcion;
         do {
@@ -72,16 +72,25 @@ public class MainApp {
                     //Generar ticket
                     Ticket nuevo = new Ticket(nombre, cedula, tramite);
                     cola.agregarTicket(nuevo);
-                    acciones.registrarAccion("Registrar ticket de " + nombre);
+                    acciones.registrarAccion(
+                            () -> cola.agregarTicket(nuevo), //accion original
+                            () -> cola.atenderTicket()  // accion contraria
+                    );
                     System.out.println("\n✅ Ticket generado con éxito: \n " + nuevo);
                     break;
 
                 case 2:
                     //Atender un ticket
-                    if (!cola.estaVacia()) {
-                        Ticket atendido = cola.atenderTicket();
+                    Ticket atendido = cola.atenderTicket();
+
+                    if(atendido != null){
                         atendido.setEstado(modelo.EstadoTicket.EN_ATENCION);
                         System.out.println("\nAtendiendo: " + atendido);
+
+                        acciones.registrarAccion(
+                                () -> cola.agregarTicket(atendido),
+                                () -> cola.atenderTicket()
+                        );
 
                         //Agregar nota
                         System.out.print("¿Desea agregar una nota durante la atención? (s/n): ");
@@ -107,7 +116,6 @@ public class MainApp {
                             System.out.println("Trámite pendiente. Ticket reingresado a la cola.\n");
                         }
 
-                        acciones.registrarAccion("Atender ticket: " + atendido.getTramite());
                     } else {
                         System.out.println("No hay casos por atender.\n");
                     }
@@ -122,13 +130,9 @@ public class MainApp {
                     sc.nextLine();
 
                     if (sub == 1) {
-                        String acc = acciones.deshacer();
-                        if (acc != null) System.out.println("Deshecho: " + acc);
-                        else System.out.println("Nada que deshacer.\n");
+                        acciones.deshacer();
                     } else if (sub == 2) {
-                        String acc = acciones.rehacer();
-                        if (acc != null) System.out.println("Rehecho: " + acc);
-                        else System.out.println("Nada que rehacer.\n");
+                        acciones.rehacer();
                     }
                     break;
 
