@@ -44,5 +44,42 @@ Cada clase cumple con una sola responsabilidad, favoreciendo la capacidad de amp
 ## Guía de ejecución
 
 1. **Compilar el proyecto:**
-   ```bash
-   javac modelo/*.java estructuras/*.java servicio/MainApp.java
+
+    ![Diagrama del sistema](img/img.1.png)
+
+
+2. **Generar un ticket:**
+
+    ![Diagrama del sistema](img/img.2.png)
+
+
+3. **Atender un caso:**
+
+    ![Diagrama del sistema](img/img.3.png)
+
+
+4. **Deshacer acción:**
+
+    ![Diagrama del sistema](img/img.4.png)
+
+
+5. **Rehacer acción:**
+
+    ![Diagrama del sistema](img/img.5.png)
+
+
+6. **Mostrar tickets en cola:**
+
+    ![Diagrama del sistema](img/img.6.png)
+
+
+7. **Consultar el historial de los tickets:**
+
+    ![Diagrama del sistema](img/img.7.png)
+
+
+8. **Salir del sistema:**
+
+    ![Diagrama del sistema](img/img.8.png)
+
+   
