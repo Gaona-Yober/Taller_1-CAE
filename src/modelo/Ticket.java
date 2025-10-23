@@ -52,4 +52,6 @@ public class Ticket {
                 id, nombreEstudiante, cedula, tramite, estado);
     }
 
+    public void setId(int i) {
+    }
 }
