@@ -30,10 +30,10 @@ Cada clase cumple con una sola responsabilidad, favoreciendo la capacidad de amp
 
 ## Casos borde manejados
 
-- **Cola vacía:** “No hay casos en espera.”
+- **Cola vacía:** Presenta: “No hay casos en espera.”
+- **Deshacer/Rehacer sin acciones** Informa que no hay acciones disponibles.
 - **Historial vacío:** “(Sin notas registradas)”.
 - **Eliminar nota inexistente:** No lanza error, se omite el cambio.
-- **Deshacer/Rehacer sin acciones previas:** Mensaje “Nada que deshacer/rehacer.”
 - **Atender sin tickets:** Advierte al usuario que no hay casos por atender.
 - **Validaciones de entrada:**
     - Cédula solo numérica y de 10 dígitos.
@@ -42,43 +42,45 @@ Cada clase cumple con una sola responsabilidad, favoreciendo la capacidad de amp
 ---
 
 ## Guía de ejecución
-
-1. **Compilar el proyecto:**
+1. **Ejecutar `MainApp` en consola**
+2. **Compilar el proyecto:**
 
     ![Diagrama del sistema](img/img.1.png)
 
 
-2. **Generar un ticket:**
+3. **Generar un ticket:**
 
     ![Diagrama del sistema](img/img.2.png)
 
 
-3. **Atender un caso:**
+4. **Atender un caso:**
+
+    Durante la atención se puede generar una nota y marcar si el trámite se completo o no.
 
     ![Diagrama del sistema](img/img.3.png)
 
 
-4. **Deshacer acción:**
+5. **Deshacer acción:**
 
     ![Diagrama del sistema](img/img.4.png)
 
 
-5. **Rehacer acción:**
+6. **Rehacer acción:**
 
     ![Diagrama del sistema](img/img.5.png)
 
 
-6. **Mostrar tickets en cola:**
+7. **Mostrar tickets en cola:**
 
     ![Diagrama del sistema](img/img.6.png)
 
 
-7. **Consultar el historial de los tickets:**
+8. **Consultar el historial de los tickets:**
 
     ![Diagrama del sistema](img/img.7.png)
 
 
-8. **Salir del sistema:**
+9. **Salir del sistema:**
 
     ![Diagrama del sistema](img/img.8.png)
 
