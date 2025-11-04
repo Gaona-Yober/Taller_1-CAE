@@ -2,66 +2,143 @@ package estructuras;
 
 import modelo.Ticket;
 import modelo.EstadoTicket;
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class ColaTickets {
-    private Queue<Ticket> cola;
+    private Nodo<Ticket> frenteNormal;
+    private Nodo<Ticket> finNormal;
+    private Nodo<Ticket> frenteUrgente;
+    private Nodo<Ticket> finUrgente;
     private int contadorTickets = 0;
 
     public ColaTickets() {
-        cola = new LinkedList<>();
+        frenteNormal = finNormal = null;
+        frenteUrgente = finUrgente = null;
     }
 
+    // Agregar ticket
     public void agregarTicket(Ticket ticket) {
-        if(ticket.getId() ==0){
+        agregarTicket(ticket, false); // por defecto normal
+    }
+
+    public void agregarTicket(Ticket ticket, boolean urgente) {
+        if (ticket.getId() == 0) {
             ticket.setId(++contadorTickets);
         }
-        cola.offer(ticket);
+
+        Nodo<Ticket> nuevo = new Nodo<>(ticket);
+
+        if (urgente) {
+            if (frenteUrgente == null) {
+                frenteUrgente = finUrgente = nuevo;
+            } else {
+                finUrgente.siguiente = nuevo;
+                finUrgente = nuevo;
+            }
+            System.out.println("Ticket agregado a la COLA URGENTE: " + ticket);
+        } else {
+            if (frenteNormal == null) {
+                frenteNormal = finNormal = nuevo;
+            } else {
+                finNormal.siguiente = nuevo;
+                finNormal = nuevo;
+            }
+            System.out.println("Ticket agregado a la COLA NORMAL: " + ticket);
+        }
     }
 
+    // Atender ticket
     public Ticket atenderTicket() {
-        return cola.poll();
+        if (estaVacia()) {
+            System.out.println("No hay tickets para atender.");
+            return null;
+        }
+
+        Ticket ticketAtendido;
+
+        // Urgentes tienen prioridad
+        if (frenteUrgente != null) {
+            ticketAtendido = frenteUrgente.dato;
+            frenteUrgente = frenteUrgente.siguiente;
+            if (frenteUrgente == null) finUrgente = null;
+            System.out.println("Atendiendo ticket URGENTE: " + ticketAtendido);
+        } else {
+            ticketAtendido = frenteNormal.dato;
+            frenteNormal = frenteNormal.siguiente;
+            if (frenteNormal == null) finNormal = null;
+            System.out.println("Atendiendo ticket NORMAL: " + ticketAtendido);
+        }
+
+        ticketAtendido.setEstado(EstadoTicket.EN_ATENCION);
+        return ticketAtendido;
     }
 
-    // Metodo para reingresar un ticket al final
-    public void reingresarTicket(Ticket ticket) {
+    // Reingresar ticket al final
+    public void reingresarTicket(Ticket ticket, boolean urgente) {
         ticket.setEstado(EstadoTicket.EN_COLA);
-        cola.offer(ticket);
-        System.out.println("Ticket #" + ticket.getId() + " reingresado al final de la cola.");
+        agregarTicket(ticket, urgente);
+        System.out.println("Ticket #" + ticket.getId() + " reingresado (" + (urgente ? "urgente" : "normal") + ").");
     }
 
-    //Verifica si exiten datos en la cola
+    // Verificación
     public boolean estaVacia() {
-        return cola.isEmpty();
+        return frenteNormal == null && frenteUrgente == null;
     }
 
     public Ticket verSiguiente() {
-        return cola.peek();
+        if (frenteUrgente != null) return frenteUrgente.dato;
+        return frenteNormal != null ? frenteNormal.dato : null;
     }
 
-    //Presenta todos los tickets
+    // Mostrar todo
     public void mostrarCola() {
-        if (cola.isEmpty()) {
+        if (estaVacia()) {
             System.out.println("No hay casos en espera.");
             return;
         }
-        System.out.println("\nCasos pendientes:");
-        for (Ticket t : cola) {
-            System.out.println("- " + t);
+
+        System.out.println("\nCasos pendientes (prioridad global):");
+
+        if (frenteUrgente != null) {
+            System.out.println("COLA URGENTE:");
+            Nodo<Ticket> actual = frenteUrgente;
+            while (actual != null) {
+                System.out.println("   - " + actual.dato);
+                actual = actual.siguiente;
+            }
+        }
+
+        if (frenteNormal != null) {
+            System.out.println("COLA NORMAL:");
+            Nodo<Ticket> actual = frenteNormal;
+            while (actual != null) {
+                System.out.println("   - " + actual.dato);
+                actual = actual.siguiente;
+            }
         }
     }
 
-    //Presenta el historial completo
     public void mostrarHistorialTickets() {
-        if (cola.isEmpty()) {
-            System.out.println("No existen tickets registrados");
+        if (estaVacia()) {
+            System.out.println("No existen tickets registrados.");
             return;
         }
 
-        for (Ticket t : cola) {
-            t.mostrarHistorial();
-            System.out.println("------------------------------");
+        if (frenteUrgente != null) {
+            Nodo<Ticket> actual = frenteUrgente;
+            while (actual != null) {
+                actual.dato.mostrarHistorial();
+                System.out.println("------------------------------");
+                actual = actual.siguiente;
+            }
+        }
+
+        if (frenteNormal != null) {
+            Nodo<Ticket> actual = frenteNormal;
+            while (actual != null) {
+                actual.dato.mostrarHistorial();
+                System.out.println("------------------------------");
+                actual = actual.siguiente;
+            }
         }
     }
 }

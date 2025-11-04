@@ -3,11 +3,13 @@ package servicio;
 import estructuras.ColaTickets;
 import estructuras.PilaAcciones;
 import modelo.Ticket;
+import modelo.EstadoTicket;
+
 import java.util.Scanner;
 
 public class MainApp {
 
-    //Metodo para leer los nombres (solo letras y espacios)
+    // Método para leer los nombres (solo letras y espacios)
     private static String leerNombre(Scanner sc, String campo) {
         String valor;
         do {
@@ -21,13 +23,13 @@ public class MainApp {
         return valor;
     }
 
-    //Metodo de validacion de cedula (solo numeros y 10 digitos)
+    // Método de validación de cédula (solo números y 10 dígitos)
     private static String leerCedula(Scanner sc) {
         String valor;
         do {
             System.out.print("Cédula (10 dígitos): ");
             valor = sc.nextLine().trim();
-            if (!valor.matches("\\d+")){
+            if (!valor.matches("\\d+")) {
                 System.out.println("La cédula debe tener solo números. Intente de nuevo");
                 valor = null;
                 continue;
@@ -41,7 +43,7 @@ public class MainApp {
         return valor;
     }
 
-    //Metodo Main
+    // === Método principal ===
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         ColaTickets cola = new ColaTickets();
@@ -49,12 +51,11 @@ public class MainApp {
 
         int opcion;
         do {
-            //Menu principal
             System.out.println("\n--- Sistema CAE - Consola Principal ---");
-            System.out.println("1. Datos del estudiante y Tramité");
+            System.out.println("1. Registrar nuevo ticket");
             System.out.println("2. Atender caso");
-            System.out.println("3. Deshacer / Rehacer");
-            System.out.println("4. Mostrar cola");
+            System.out.println("3. Deshacer / Rehacer acción");
+            System.out.println("4. Mostrar cola de tickets");
             System.out.println("5. Consultar historial de tickets");
             System.out.println("0. Salir");
             System.out.print("Seleccione una opción: ");
@@ -62,37 +63,42 @@ public class MainApp {
             sc.nextLine();
 
             switch (opcion) {
-                case 1:
-                    //Registrar estudiante y tramite
+                case 1 -> {
+                    // === Registrar estudiante y trámite ===
                     System.out.println("\nRegistro de nuevo estudiante");
                     String nombre = leerNombre(sc, "Nombre del estudiante");
                     String cedula = leerCedula(sc);
                     String tramite = leerNombre(sc, "Trámite (certificado, constancia, homologación, etc.)");
 
-                    //Generar ticket
-                    Ticket nuevo = new Ticket(nombre, cedula, tramite);
-                    cola.agregarTicket(nuevo);
-                    acciones.registrarAccion(
-                            () -> cola.agregarTicket(nuevo), //accion original
-                            () -> cola.atenderTicket()  // accion contraria
-                    );
-                    System.out.println("\n✅ Ticket generado con éxito: \n " + nuevo);
-                    break;
+                    System.out.print("¿Es un caso urgente? (s/n): ");
+                    boolean urgente = sc.nextLine().trim().equalsIgnoreCase("s");
 
-                case 2:
-                    //Atender un ticket
+                    Ticket nuevo = new Ticket(nombre, cedula, tramite);
+                    cola.agregarTicket(nuevo, urgente);
+
+                    // Registrar acción (para deshacer y rehacer)
+                    acciones.registrarAccion(
+                            () -> cola.agregarTicket(nuevo, urgente), // acción original
+                            cola::atenderTicket // acción contraria
+                    );
+
+                    System.out.println("\n✅ Ticket generado con éxito: \n " + nuevo);
+                }
+
+                case 2 -> {
+                    // Atender un ticket
                     Ticket atendido = cola.atenderTicket();
 
-                    if(atendido != null){
-                        atendido.setEstado(modelo.EstadoTicket.EN_ATENCION);
+                    if (atendido != null) {
                         System.out.println("\nAtendiendo: " + atendido);
 
+                        // Registrar acción en la pila
                         acciones.registrarAccion(
-                                () -> cola.agregarTicket(atendido),
-                                () -> cola.atenderTicket()
+                                () -> cola.agregarTicket(atendido, false),
+                                cola::atenderTicket
                         );
 
-                        //Agregar nota
+                        // Nota adicional
                         System.out.print("¿Desea agregar una nota durante la atención? (s/n): ");
                         String notaResp = sc.nextLine().trim().toLowerCase();
                         if (notaResp.equals("s")) {
@@ -102,27 +108,28 @@ public class MainApp {
                             System.out.println("Nota añadida al historial.");
                         }
 
+                        // Estado final
                         System.out.print("¿El trámite se completó? (s/n): ");
                         String resp = sc.nextLine().trim().toLowerCase();
 
                         if (resp.equals("s")) {
-                            atendido.setEstado(modelo.EstadoTicket.COMPLETADO);
+                            atendido.setEstado(EstadoTicket.COMPLETADO);
                             atendido.agregarNota("Trámite completado con éxito.");
                             System.out.println("Ticket completado: " + atendido);
                         } else {
-                            atendido.setEstado(modelo.EstadoTicket.PENDIENTE_DOCS);
-                            //atendido.agregarNota();
-                            cola.reingresarTicket(atendido);
+                            atendido.setEstado(EstadoTicket.PENDIENTE_DOCS);
+                            System.out.print("¿Reingresar como urgente? (s/n): ");
+                            boolean urgente = sc.nextLine().trim().equalsIgnoreCase("s");
+                            cola.reingresarTicket(atendido, urgente);
                             System.out.println("Trámite pendiente. Ticket reingresado a la cola.\n");
                         }
-
                     } else {
-                        System.out.println("No hay casos por atender.\n");
+                        System.out.println("⚠No hay casos por atender.\n");
                     }
-                    break;
+                }
 
-                case 3:
-                    //Funcion deshacer y rehacer acciones
+                case 3 -> {
+                    // === Deshacer / Rehacer ===
                     System.out.println("\n1. Deshacer");
                     System.out.println("2. Rehacer");
                     System.out.print("Seleccione: ");
@@ -133,27 +140,29 @@ public class MainApp {
                         acciones.deshacer();
                     } else if (sub == 2) {
                         acciones.rehacer();
+                    } else {
+                        System.out.println("Opción no válida.");
                     }
-                    break;
+                }
 
-                case 4:
-                    //Presentar todos los tickets en cola
+                case 4 -> {
+                    // === Mostrar colas ===
                     cola.mostrarCola();
-                    break;
+                }
 
-                case 5:
-                    //Consultar historial
+                case 5 -> {
+                    // === Mostrar historial de tickets ===
                     cola.mostrarHistorialTickets();
-                    break;
+                }
 
-                case 0:
-                    //Salir del sistema
-                    System.out.println("Saliendo del sistema...");
-                    break;
+                case 0 -> System.out.println("👋 Saliendo del sistema...");
 
-                default:
-                    System.out.println("Opción inválida.");
+                default -> {
+                    if (opcion < 0 || opcion > 5)
+                        System.out.println("⚠Opción inválida, intente nuevamente.");
+                }
             }
+
         } while (opcion != 0);
 
         sc.close();
