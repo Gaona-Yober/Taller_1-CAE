@@ -48,11 +48,6 @@ public class ControladorTiket {
 
         System.out.println("\nAtendiendo: " + atendido);
 
-        acciones.ejecutarAccion(
-                () -> {},
-                () -> cola.reingresarTicket(atendido, false)
-        );
-
         System.out.print("¿Desea agregar una nota durante la atención? (s/n): ");
         if (sc.nextLine().trim().equalsIgnoreCase("s")) {
             System.out.print("Ingrese nota: ");
@@ -61,13 +56,26 @@ public class ControladorTiket {
 
         System.out.print("¿El trámite se completó? (s/n): ");
         if (sc.nextLine().trim().equalsIgnoreCase("s")) {
-            atendido.setEstado(EstadoTicket.COMPLETADO);
-            atendido.agregarNota("Trámite completado con éxito.");
-            cola.registrarHistorial(atendido);
+            acciones.ejecutarAccion(
+                    () -> {
+                        atendido.setEstado(EstadoTicket.COMPLETADO);
+                        atendido.agregarNota("Trámite completado con éxito.");
+                        cola.registrarHistorial(atendido);
+                    },
+                    () -> {
+                        cola.eliminarDeHistorial(atendido);
+                        cola.reingresarTicket(atendido, false);
+                    }
+            );
         } else {
             atendido.setEstado(EstadoTicket.PENDIENTE_DOCS);
             System.out.print("¿Reingresar como urgente? (s/n): ");
-            cola.reingresarTicket(atendido, sc.nextLine().trim().equalsIgnoreCase("s"));
+            boolean urgente = sc.nextLine().trim().equalsIgnoreCase("s");
+
+            acciones.ejecutarAccion(
+                    () -> cola.reingresarTicket(atendido, urgente),
+                    () -> cola.eliminarTicketPorId(atendido.getId())
+            );
         }
     }
 

@@ -13,9 +13,6 @@ public class ColaTickets {
     private Nodo<Ticket> finNormal;
     private Nodo<Ticket> frenteUrgente;
     private Nodo<Ticket> finUrgente;
-    private int contadorTickets = 0;
-
-
 
     public ColaTickets() {
         frenteNormal = finNormal = null;
@@ -28,9 +25,6 @@ public class ColaTickets {
     }
 
     public void agregarTicket(Ticket ticket, boolean urgente) {
-        if (ticket.getId() == 0) {
-            ticket.setId(++contadorTickets);
-        }
 
         Nodo<Ticket> nuevo = new Nodo<>(ticket);
 
@@ -157,12 +151,15 @@ public class ColaTickets {
     }
 
     public void mostrarHistorialTickets() {
-        if (historialVacio()) {
+        if (frenteUrgente == null && frenteNormal == null) {
             System.out.println("No existen tickets registrados.");
             return;
         }
 
+        System.out.println("--- Historial de tickets ---");
+
         if (frenteUrgente != null) {
+            System.out.println("\nCola Urgente:");
             Nodo<Ticket> actual = frenteUrgente;
             while (actual != null) {
                 actual.dato.mostrarHistorial();
@@ -172,6 +169,7 @@ public class ColaTickets {
         }
 
         if (frenteNormal != null) {
+            System.out.println("\nCola Normal:");
             Nodo<Ticket> actual = frenteNormal;
             while (actual != null) {
                 actual.dato.mostrarHistorial();
@@ -243,4 +241,25 @@ public class ColaTickets {
             System.out.println("Error al exportar historial: " + e.getMessage());
         }
     }
+
+    public void eliminarDeHistorial(Ticket ticket){
+        if (frenteHistorial == null || ticket == null) return;
+        if (frenteHistorial.dato.equals(ticket)) {
+            frenteHistorial = frenteHistorial.siguiente;
+            if (frenteHistorial == null) finHistorial = null;
+            System.out.println("Ticket eliminado del historial: " + ticket);
+            return;
+        }
+
+        Nodo<Ticket> actual = frenteHistorial;
+        while (actual.siguiente != null && !actual.siguiente.dato.equals(ticket)) {
+            actual = actual.siguiente;
+        }
+
+        if (actual.siguiente != null) {
+            actual.siguiente = actual.siguiente.siguiente;
+          System.out.println("Ticket eliminado del historial: " + ticket);
+        }
+    }
+
 }
