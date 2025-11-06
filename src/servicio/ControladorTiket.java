@@ -23,13 +23,13 @@ public class ControladorTiket {
         System.out.println("\nRegistro de nuevo estudiante");
 
         String nombre = Validacion.leerNombre(sc, "Nombre del estudiante");
-        String cedula = Validacion.leerCedula(sc);
+        String identificacion = Validacion.leerIdentificacion(sc);
         String tramite = Validacion.leerNombre(sc, "Trámite (certificado, constancia, etc.)");
 
         System.out.print("¿Es un caso urgente? (s/n): ");
         boolean urgente = sc.nextLine().trim().equalsIgnoreCase("s");
 
-        Ticket nuevo = new Ticket(nombre, cedula, tramite);
+        Ticket nuevo = new Ticket(nombre, identificacion, tramite);
         cola.agregarTicket(nuevo, urgente);
 
         acciones.registrarAccion(
