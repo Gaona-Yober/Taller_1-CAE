@@ -37,6 +37,9 @@ El archivo `MainApp` gestiona el menú principal e interactúa con el controlado
 src/
 ├── estructuras/
 │   ├── ColaTickets.java
+│   └── ListaNotas.java
+│   └── Nodo.java
+│   └── Nota.java
 │   └── PilaAcciones.java
 ├── modelo/
 │   ├── Ticket.java
@@ -44,6 +47,7 @@ src/
 ├── servicio/
 │   ├── ControladorTiket.java
 │   └── MainApp.java
+│   └── Validacion.java
 ```
 
 ---
