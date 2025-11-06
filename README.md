@@ -13,7 +13,7 @@ Se implementaron tres estructuras principales:
 
 Cada clase cumple con una sola responsabilidad, favoreciendo la capacidad de ampliar el código y una facilidad de lectura.
 
----
+----
 
 ## Catálogo de estados del ticket
 
