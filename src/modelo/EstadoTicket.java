@@ -5,9 +5,8 @@ public enum EstadoTicket {
     PENDIENTE_DOCS,
     COMPLETADO;
 
-    /**
-     * Determina si la transición de estadoActual hacia nuevoEstado es válida.
-     */
+    //Determina si la transicion de estadoActual hacia nuevoEstado es valida.
+
     public static boolean esTransicionValida(EstadoTicket estadoActual, EstadoTicket nuevoEstado) {
         if (estadoActual == null || nuevoEstado == null) return false;
 

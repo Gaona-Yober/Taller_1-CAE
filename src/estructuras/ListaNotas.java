@@ -12,12 +12,12 @@ public class ListaNotas {
         cabeza = nuevo;
     }
 
-    public void eliminarNota(String texto) {
-        if (cabeza == null) return;
+    public boolean eliminarNota(String texto) {
+        if (cabeza == null) return false;
 
         if (cabeza.dato.getTexto().equals(texto)) {
             cabeza = cabeza.siguiente;
-            return;
+            return true;
         }
 
         Nodo<Nota> actual = cabeza;
@@ -27,7 +27,19 @@ public class ListaNotas {
 
         if (actual.siguiente != null) {
             actual.siguiente = actual.siguiente.siguiente;
+            return true;
         }
+        return false;
+    }
+
+    public int size(){
+        int count = 0;
+        Nodo<Nota> actual = cabeza;
+        while (actual != null){
+            count++;
+            actual = actual.siguiente;
+        }
+        return count;
     }
 
     public void mostrarNotas() {

@@ -21,7 +21,7 @@ public class Ticket {
         agregarNota("Ticket creado y agregado a la cola.");
     }
 
-    // === GETTERS ===
+    // GETTERS
     public int getId() {
         return id;
     }
@@ -42,9 +42,12 @@ public class Ticket {
         return estado;
     }
 
+    public int getHistorialNotasCount(){ return historialNotas.size();}
+
+    // SETTERS
     public void setId(int i) {
-        if (id != contador - 1) {  // Si ya se asignó en constructor
-            System.out.println("⚠️ Advertencia: ID no se puede cambiar después de crear el ticket.");
+        if (id != contador - 1) {  // Si ya se asigno en constructor
+            System.out.println("Advertencia: ID no se puede cambiar después de crear el ticket.");
         } else {
             this.id = i;
         }
@@ -84,7 +87,7 @@ public class Ticket {
         }
     }
 
-    // === NOTAS ===
+    // NOTAS
     public void agregarNota(String texto) {
         historialNotas.agregarNota("[" + estado + "] " + texto);
     }
@@ -94,7 +97,7 @@ public class Ticket {
     }
 
     public void mostrarHistorial() {
-        System.out.println("\n📜 HISTORIAL DEL TICKET #" + id + ":");
+        System.out.println("\n HISTORIAL DEL TICKET #" + id + ":");
         System.out.println("Estudiante: " + nombreEstudiante + " (" + cedula + ")");
         System.out.println("Trámite: " + tramite);
         System.out.println("Estado actual: " + estado);

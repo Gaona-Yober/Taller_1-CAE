@@ -12,24 +12,20 @@ public class PilaAcciones {
     }
 
     public void registrarAccion(Runnable accion, Runnable accionContraria) {
-        pilaUndo.push(() -> {
-            accionContraria.run();
-            pilaRedo.push(() -> accion.run()); //guarda la accion original, al deshacer
-                });
-        pilaRedo.clear(); //se limpia la pila de rehacer al registrar una nueva accion
-    }
-
-    public void ejecutarAccion(Runnable accion){
         accion.run();
+        pilaUndo.push(accionContraria); //Guarda la accion opuesta
+        pilaRedo.clear(); //limpia el Redo cuando se registra una nueva accion
+
     }
 
-    public void deshacer() {
+   public void deshacer() {
         if (pilaUndo.isEmpty()) {
             System.out.println("No hay acciones para deshacer.");
             return;
         }
-        Runnable accion = pilaUndo.pop();
-        accion.run();//ejecuta la accion contraria
+        Runnable accionContraria = pilaUndo.pop();
+        accionContraria.run();//ejecuta la accion contraria
+       pilaRedo.push(accionContraria); //almacena la inversa
         System.out.println("Acción deshecha correctamente.");
     }
 
@@ -40,6 +36,7 @@ public class PilaAcciones {
         }
         Runnable accion = pilaRedo.pop();
         accion.run(); //ejecuta la accion original
+        pilaUndo.push(accion);
         System.out.println("Acción rehecha correctamente");
     }
 }

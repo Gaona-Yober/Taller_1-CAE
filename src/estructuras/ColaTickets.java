@@ -3,12 +3,19 @@ package estructuras;
 import modelo.Ticket;
 import modelo.EstadoTicket;
 
+import java.nio.charset.StandardCharsets;
+
+
 public class ColaTickets {
+    private Nodo<Ticket> frenteHistorial;
+    private Nodo<Ticket> finHistorial;
     private Nodo<Ticket> frenteNormal;
     private Nodo<Ticket> finNormal;
     private Nodo<Ticket> frenteUrgente;
     private Nodo<Ticket> finUrgente;
     private int contadorTickets = 0;
+
+
 
     public ColaTickets() {
         frenteNormal = finNormal = null;
@@ -79,6 +86,18 @@ public class ColaTickets {
         System.out.println("Ticket #" + ticket.getId() + " reingresado (" + (urgente ? "urgente" : "normal") + ").");
     }
 
+    public void registrarHistorial(Ticket ticket){
+        if (ticket == null || ticket.getEstado() != EstadoTicket.COMPLETADO) return;
+
+        Nodo<Ticket> nuevo = new Nodo<>(ticket);
+        if(frenteHistorial == null){
+            frenteHistorial = finHistorial = nuevo;
+        } else {
+            finHistorial.siguiente = nuevo;
+            finHistorial = nuevo;
+        }
+    }
+
     // Verificación
     public boolean estaVacia() {
         return frenteNormal == null && frenteUrgente == null;
@@ -89,7 +108,7 @@ public class ColaTickets {
         return frenteNormal != null ? frenteNormal.dato : null;
     }
 
-    // Mostrar todo
+    // Mostrar
     public void mostrarCola() {
         if (estaVacia()) {
             System.out.println("No hay casos en espera.");
@@ -139,6 +158,69 @@ public class ColaTickets {
                 System.out.println("------------------------------");
                 actual = actual.siguiente;
             }
+        }
+    }
+
+    public void mostrarHistorialAtendidos(){
+        if(frenteHistorial == null){
+            System.out.println("No hay tickets atendidos aún.");
+            return;
+        }
+        System.out.println("\n Historial de casos atendidos");
+        Nodo<Ticket> actual = frenteHistorial;
+        while (actual != null){
+            System.out.println("  - " + actual.dato);
+            actual = actual.siguiente;
+        }
+    }
+
+    // Verifica si existe el historial
+    public boolean historialVacio(){
+        return frenteHistorial == null;
+    }
+
+    //Exportar Historial de casos atendidos
+    public void exportarHistorialCSV(String rutaArchivo){
+        if(frenteHistorial == null){
+            System.out.println("No existen tickets atendidos");
+            return;
+        }
+        try {
+            String carpetaUsuario = System.getProperty("user.home");
+            java.io.File carpetaDestino = new java.io.File(carpetaUsuario, "Documents/CAE_Historial");
+            if(!carpetaDestino.exists()) carpetaDestino.mkdirs();
+
+            String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
+            String rutaFinal = (rutaArchivo == null || rutaArchivo.isBlank())
+                    ? " Historial_Atendidos_" + timestamp + ".csv"
+                    : rutaArchivo.replaceAll("\\.csv$" , "") + "_" + timestamp + ".csv";
+        java.io.File archivo  = new java.io.File(carpetaDestino, rutaFinal);
+
+        try (java.io.Writer writer = new java.io.BufferedWriter(
+                new java.io.OutputStreamWriter(
+                        new java.io.FileOutputStream(archivo),
+                        StandardCharsets.UTF_8
+                )
+        )){
+            writer.write("ID, Nombre, Cédula, Trámite, Estado, Número de notas\n");
+
+            Nodo<Ticket> actual = frenteHistorial;
+            while(actual != null) {
+                Ticket t = actual.dato;
+                writer.write(String.format("%d,%s,%s,%s,%s,%d\n",
+                        t.getId(),
+                        t.getNombreEstudiante(),
+                        t.getCedula(),
+                        t.getTramite(),
+                        t.getEstado(),
+                        t.getHistorialNotasCount()));
+                actual = actual.siguiente;
+                }
+            }
+            System.out.println("Historial guardado corretamente en: " + archivo.getAbsolutePath());
+
+        } catch (Exception e){
+            System.out.println("Error al exportar historial: " + e.getMessage());
         }
     }
 }

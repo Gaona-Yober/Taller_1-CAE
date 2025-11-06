@@ -5,11 +5,12 @@ import estructuras.PilaAcciones;
 import modelo.Ticket;
 import modelo.EstadoTicket;
 
+import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class MainApp {
 
-    // Método para leer los nombres (solo letras y espacios)
+    // Metodo para leer los nombres (solo letras y espacios)
     private static String leerNombre(Scanner sc, String campo) {
         String valor;
         do {
@@ -23,7 +24,7 @@ public class MainApp {
         return valor;
     }
 
-    // Método de validación de cédula (solo números y 10 dígitos)
+    // Metodo de validación de cédula (solo numeros y 10 digitos)
     private static String leerCedula(Scanner sc) {
         String valor;
         do {
@@ -43,13 +44,34 @@ public class MainApp {
         return valor;
     }
 
-    // === Método principal ===
+    private static int leerOpcionMenu(Scanner sc, int min, int max){
+        int opcion = -1;
+        boolean valida = false;
+
+        do{
+            System.out.print("Seleccione una opción: ");
+            String entrada = sc.nextLine().trim();
+            try {
+                opcion = Integer.parseInt(entrada);
+                if (opcion < min || opcion > max){
+                    System.out.println("Error, no existe dentro de las opciones");
+                } else {
+                    valida = true;
+                }
+            } catch (NumberFormatException e){
+                System.out.println("Error, ingrese un valor numérico");
+            }
+        } while (!valida);
+        return opcion;
+    }
+
+    // Metodo principal
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         ColaTickets cola = new ColaTickets();
         PilaAcciones acciones = new PilaAcciones();
 
-        int opcion;
+        int opcion ;
         do {
             System.out.println("\n--- Sistema CAE - Consola Principal ---");
             System.out.println("1. Registrar nuevo ticket");
@@ -57,10 +79,10 @@ public class MainApp {
             System.out.println("3. Deshacer / Rehacer acción");
             System.out.println("4. Mostrar cola de tickets");
             System.out.println("5. Consultar historial de tickets");
+            System.out.println("6. Mostrar tickets atendidos y exportar");
             System.out.println("0. Salir");
-            System.out.print("Seleccione una opción: ");
-            opcion = sc.nextInt();
-            sc.nextLine();
+            opcion = leerOpcionMenu(sc, 0, 6);
+
 
             switch (opcion) {
                 case 1 -> {
@@ -82,7 +104,7 @@ public class MainApp {
                             cola::atenderTicket // acción contraria
                     );
 
-                    System.out.println("\n✅ Ticket generado con éxito: \n " + nuevo);
+                    System.out.println("\n Ticket generado con éxito: \n " + nuevo);
                 }
 
                 case 2 -> {
@@ -116,6 +138,7 @@ public class MainApp {
                             atendido.setEstado(EstadoTicket.COMPLETADO);
                             atendido.agregarNota("Trámite completado con éxito.");
                             System.out.println("Ticket completado: " + atendido);
+                            cola.registrarHistorial(atendido);
                         } else {
                             atendido.setEstado(EstadoTicket.PENDIENTE_DOCS);
                             System.out.print("¿Reingresar como urgente? (s/n): ");
@@ -124,7 +147,7 @@ public class MainApp {
                             System.out.println("Trámite pendiente. Ticket reingresado a la cola.\n");
                         }
                     } else {
-                        System.out.println("⚠No hay casos por atender.\n");
+                        System.out.println("No hay casos por atender.\n");
                     }
                 }
 
@@ -155,11 +178,24 @@ public class MainApp {
                     cola.mostrarHistorialTickets();
                 }
 
-                case 0 -> System.out.println("👋 Saliendo del sistema...");
+                case 6 -> {
+                    cola.mostrarHistorialAtendidos();
+
+                    System.out.println("\n Exportar historial a csv (s/n): ");
+                    String exportar = sc.nextLine().trim().toLowerCase();
+                    if (exportar.equals("s")){
+                        System.out.println("Ingrese el nombre del archivo csv:");
+                        String ruta = sc.nextLine().trim();
+                        if (ruta.isEmpty()) ruta = "Historial_atendidos";
+                        cola.exportarHistorialCSV(ruta + ".csv");
+                    }
+                }
+
+                case 0 -> System.out.println("Saliendo del sistema...");
 
                 default -> {
                     if (opcion < 0 || opcion > 5)
-                        System.out.println("⚠Opción inválida, intente nuevamente.");
+                        System.out.println("Opción inválida, intente nuevamente.");
                 }
             }
 
