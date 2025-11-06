@@ -53,6 +53,26 @@ public class ColaTickets {
         }
     }
 
+    public void eliminarTicketPorId(int id){
+        frenteNormal = eliminarDeCola(frenteNormal, id);
+        frenteUrgente = eliminarDeCola(frenteUrgente, id);
+    }
+
+    private Nodo<Ticket> eliminarDeCola(Nodo<Ticket> frente, int id){
+        if (frente == null) return null;
+        if (frente.dato.getId() == id) return frente.siguiente;
+
+        Nodo<Ticket> actual = frente;
+        while (actual.siguiente != null && actual.siguiente.dato.getId() != id) {
+            actual = actual.siguiente;
+        }
+
+        if (actual.siguiente != null) {
+            actual.siguiente = actual.siguiente.siguiente;
+        }
+        return frente;
+    }
+
     // Atender ticket
     public Ticket atenderTicket() {
         if (estaVacia()) {
@@ -137,7 +157,7 @@ public class ColaTickets {
     }
 
     public void mostrarHistorialTickets() {
-        if (estaVacia()) {
+        if (historialVacio()) {
             System.out.println("No existen tickets registrados.");
             return;
         }

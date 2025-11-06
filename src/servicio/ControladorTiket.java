@@ -30,11 +30,9 @@ public class ControladorTiket {
         boolean urgente = sc.nextLine().trim().equalsIgnoreCase("s");
 
         Ticket nuevo = new Ticket(nombre, identificacion, tramite);
-        cola.agregarTicket(nuevo, urgente);
-
-        acciones.registrarAccion(
+            acciones.ejecutarAccion(
                 () -> cola.agregarTicket(nuevo, urgente),
-                cola::atenderTicket
+                () -> cola.eliminarTicketPorId(nuevo.getId())
         );
 
         System.out.println("\n Ticket generado con éxito: \n " + nuevo);
@@ -50,9 +48,9 @@ public class ControladorTiket {
 
         System.out.println("\nAtendiendo: " + atendido);
 
-        acciones.registrarAccion(
-                () -> cola.agregarTicket(atendido, false),
-                cola::atenderTicket
+        acciones.ejecutarAccion(
+                () -> {},
+                () -> cola.reingresarTicket(atendido, false)
         );
 
         System.out.print("¿Desea agregar una nota durante la atención? (s/n): ");

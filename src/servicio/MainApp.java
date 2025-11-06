@@ -32,7 +32,13 @@ public class MainApp {
                 case 3 -> controller.deshacerRehacer();
                 case 4 -> cola.mostrarCola();
                 case 5 -> cola.mostrarHistorialTickets();
-                case 6 -> cola.mostrarHistorialAtendidos();
+                case 6 -> {
+                    cola.mostrarHistorialAtendidos();
+                    System.out.println("Exportar el historial en csv (s/n): ");
+                    if(sc.nextLine().trim().equalsIgnoreCase("s")){
+                        cola.exportarHistorialCSV("tickets_exportados.csv");
+                    }
+                }
                 case 0 -> System.out.println("Saliendo...");
             }
         } while (opcion != 0);
