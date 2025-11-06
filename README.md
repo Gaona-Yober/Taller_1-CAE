@@ -26,7 +26,7 @@ Cada clase cumple con una sola responsabilidad, favoreciendo la capacidad de amp
 
 > Cada cambio de estado puede acompañarse de una **nota**, registrada en el historial del ticket.
 
----
+----
 
 ## Casos borde manejados
 
