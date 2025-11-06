@@ -95,11 +95,6 @@ Ejecutar:
 java servicio.MainApp
 ```
 
----
-
-## ✨ Contribuciones
-
-Las contribuciones o mejoras son bienvenidas. Siéntete libre de crear issues o pull requests.
 
 ---
 
