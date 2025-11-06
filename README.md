@@ -39,7 +39,7 @@ Cada clase cumple con una sola responsabilidad, favoreciendo la capacidad de amp
     - Cédula solo numérica y de 10 dígitos.
     - Nombres y trámites solo con letras y espacios.
 
----
+----
 
 ## Guía de ejecución
 1. **Ejecutar `MainApp` en consola**
